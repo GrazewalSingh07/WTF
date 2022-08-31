@@ -2,7 +2,7 @@ import { Box, Button, Container, Heading, HStack, Image, Input, InputGroup, Inpu
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { getdata } from '../Redux/App/action'
+import { getdata, getdatabycity } from '../Redux/App/action'
 import{ImLocation} from "react-icons/im"
 import {BsThreeDotsVertical,BsSearch} from "react-icons/bs"
 import {MdLocationOn} from "react-icons/md"
@@ -19,12 +19,15 @@ import { Footer } from '../components/Footer'
 export const Gym = () => {
    const [star,setStar]=useState(Array(5).fill(1))
    const [isGIF,setIsGIF]=useState(true)
+   const [filter,setFilter]= useState("")
+   const [location,setlocation]=useState("")
     const dispatch= useDispatch()
     const navigate= useNavigate()
     const [city,setcity]=useState(null)
     const data= useSelector((state)=>state.AppReducer.data)
     const [searchinpage, setsearchinpage] = useState("");
     const [seacheddata, setsearcheddata] = useState(null);
+    // console.log(data)
     useEffect(() => {
         if (!searchinpage) {
           setsearcheddata([]);
@@ -34,10 +37,16 @@ export const Gym = () => {
               item.gym_name?.toLowerCase().indexOf(searchinpage) !== -1 ? true : false
             )
             .map((item) => item);
-    
+
+            
+             
           setsearcheddata(newlistofsuggestions);
         }
-      }, [searchinpage]);
+      }, [searchinpage,filter,city]);
+
+ 
+
+
       const searchInpage = (e) => {
         setsearchinpage(e.target.value);
        
@@ -46,17 +55,19 @@ export const Gym = () => {
     useEffect(()=>{
         dispatch(getdata())
     },[])
-
+useEffect(()=>{
+dispatch(getdatabycity(city))
+},[city])
 
     useEffect(()=>{
         let id=setTimeout(() => {
                 setIsGIF(false)
-        }, 5000);
+        }, 3000);
         return ()=>clearTimeout(id)
     },[])
     const options = (
-        <Box>
-          <Menu
+        <Box >
+          <Menu 
             style={{ backgroundColor: "#2E2E2E", width: "100%" }}
             theme="dark"
             items={[
@@ -64,18 +75,17 @@ export const Gym = () => {
                 key: "1",
                 label: (
                   <Button
+                  backgroundColor="none"
                   w="100%"
                   justifyContent="left"
                   onClick={()=>{
                     setcity("Delhi")
                   }}
-                    _hover={{ variant: "ghost" }}
+                    _hover={{ variant: "ghost",backgroundColor:"none" }}
                     variant="ghost"
                     fontSize="large"
                     color="white"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://www.luohanacademy.com"
+                    
                   >
                     Delhi
                   </Button>
@@ -85,6 +95,7 @@ export const Gym = () => {
                 key: "2",
                 label: (
                   <Button
+                  backgroundColor="none"
                   w="100%"
                   justifyContent="left"
                   onClick={()=>{
@@ -94,9 +105,7 @@ export const Gym = () => {
                     variant="ghost"
                     fontSize="large"
                     color="white"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://www.luohanacademy.com"
+                    
                   >
                    New Delhi
                   </Button>
@@ -115,9 +124,7 @@ export const Gym = () => {
                     variant="ghost"
                     fontSize="large"
                     color="white"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    href="https://www.luohanacademy.com"
+                    
                   >
                     Ghaziabad
                   </Button>
@@ -161,7 +168,13 @@ export const Gym = () => {
                 <InputGroup background="none"  borderRadius=".5rem" width="90%" margin="auto"pt="1rem" pb="1rem" mt="2rem" border="5px solid white" backgroundColor="black"  >
                     <InputLeftElement background="none"  pl="1rem" pt="1rem" children={<BsSearch fontSize="2rem" background="none"  color="white" />}/>
                     <Input onChange={searchInpage} fontSize="larger" pl="4rem" color="white" variant="unstyled" width="90%" focusBorderColor='none' outline="none"   placeholder='Search gym name here....' _placeholder={{color:"white"}} />
-                    <InputRightElement  background="none"   pt="1rem" mr="5rem"  children={<HStack background="none"   spacing={6}><Button colorScheme="red">{<ImLocation background="none"  color="white" fontSize="2rem" />}</Button><Button    colorScheme="red">Clear</Button></HStack>} />
+                    <InputRightElement  background="none"   pt="1rem" mr="5rem"  children={<HStack background="none"   spacing={6}><Button colorScheme="red">{<ImLocation background="none"  color="white" fontSize="2rem" />}</Button><Button  onClick={()=>{
+                        setcity(null) 
+                        setsearchinpage("")
+                        dispatch(getdata())
+                        setsearcheddata(data)
+
+                        }}  colorScheme="red">Clear</Button></HStack>} />
         
                 </InputGroup>
                 <Container background="none"  display="flex" maxW="container.2xl" margin="auto">
@@ -222,7 +235,7 @@ export const Gym = () => {
                         })}
                     </Stack>:seacheddata.length==0&&searchinpage.length>0?<Heading>No data</Heading> : <Stack overflow="scroll" p="3rem" height="100vh" >
                         {data?.map((el)=>{ 
-                            return <Box key={el.user_id} display="flex" cursor="pointer" backgroundColor="#131313"   border="1px solid" width="100%" onClick={()=>{navigate(`/gym/${el.user_id}`)}} > 
+                            return <Box key={el.user_id} display="flex" cursor="pointer" backgroundColor="#131313"   width="100%" onClick={()=>{navigate(`/gym/${el.user_id}`)}} > 
                                      <Image     width="45%" src={el?.cover_image ? el.cover_image:"https://blog.nasm.org/hubfs/cleangym%20%281%29.jpg"}/>
                                     < Box  backgroundColor="#131313" justifyContent="space-between" display="flex" width="100%" spacing="auto" p="2rem" lineHeight="2rem" >
                                         

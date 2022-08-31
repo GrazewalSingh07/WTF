@@ -20,7 +20,19 @@ export const getdatafailure=()=>{
 }
 export const getdata=()=>(dispatch)=>{
     dispatch(getdatarequest())
-    return axios.get("https://devapi.wtfup.me/gym/nearestgym?lat=30.325488815850512&long=78.0042384802231").then((res)=>{
+    return axios.get("https://devapi.wtfup.me/gym/nearestgym?lat=28.5966034&long=77.3286464").then((res)=>{
+        // console.log(res.data)
+        dispatch(getdatasuccess(res.data.data))
+    }).catch((err)=>{
+        dispatch(getdatafailure())
+    })
+    
+}
+
+export const getdatabycity=(city)=>(dispatch)=>{
+    dispatch(getdatarequest())
+    return axios.get(`https://devapi.wtfup.me/gym/places`).then((res)=>{
+       
         dispatch(getdatasuccess(res.data.data))
     }).catch((err)=>{
         dispatch(getdatafailure())

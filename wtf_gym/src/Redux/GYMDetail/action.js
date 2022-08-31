@@ -20,7 +20,12 @@ export const getdatafailure=()=>{
 }
 export const getdata=(id)=>(dispatch)=>{
     dispatch(getdatarequest())
-    return axios.post("https://wtfup.me/gym_details/WTF-The-Fitness-Point-Gym",{"gym_id":id}).then((res)=>{
+    return axios.post(`https://devapi.wtfup.me/gym/plan`,{
+        
+            "gym_id":id
+        
+    }).then((res)=>{
+       
         dispatch(getdatasuccess(res.data.data))
     }).catch((err)=>{
         dispatch(getdatafailure())
